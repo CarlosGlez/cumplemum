@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feliz cumpleaños, Mamá</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Work+Sans:wght@400;500&display=swap');
+
+  :root{
+    --blush-bg: #fbf1ef;
+    --paper: #fffaf7;
+    --wine: #6d2436;
+    --wine-deep: #4a1826;
+    --rose: #c97b84;
+    --rose-soft: #e9bcc0;
+    --gold: #ab8148;
+    --ink: #3a2226;
+    --ink-soft: #6b5257;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin:0;
+    padding:0;
+    min-height:100vh;
+    background: var(--blush-bg);
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(201,123,132,0.10), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(171,129,72,0.08), transparent 40%);
+    color: var(--ink);
+    font-family: 'Work Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  .stage{
+    min-height: 100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 32px 20px;
+  }
+
+  /* ---------- ENVELOPE ---------- */
+  .envelope-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap: 28px;
+  }
+
+  .envelope-wrap.is-hidden{
+    display:none;
+  }
+
+  .envelope{
+    position:relative;
+    width: min(360px, 82vw);
+    aspect-ratio: 3 / 2;
+    cursor:pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .envelope-body{
+    position:absolute;
+    inset:0;
+    background: var(--paper);
+    border: 1px solid rgba(109,36,54,0.18);
+    border-radius: 3px;
+    box-shadow: 0 22px 45px -20px rgba(74,24,38,0.35);
+    overflow:hidden;
+  }
+
+  .envelope-body::before,
+  .envelope-body::after{
+    content:"";
+    position:absolute;
+    bottom:0;
+    width:52%;
+    height:100%;
+    background: linear-gradient(135deg, #f6e9e6, var(--paper) 70%);
+    clip-path: polygon(0 100%, 100% 100%, 0 0);
+  }
+  .envelope-body::after{
+    right:0;
+    clip-path: polygon(0 100%, 100% 100%, 100% 0);
+  }
+
+  .flap{
+    position:absolute;
+    top:0; left:0; right:0;
+    height: 62%;
+    background: linear-gradient(160deg, var(--wine), var(--wine-deep));
+    clip-path: polygon(0 0, 100% 0, 50% 62%);
+    transform-origin: top center;
+    transition: transform 0.7s cubic-bezier(.6,-0.1,.3,1.3);
+    z-index: 3;
+  }
+
+  .seal{
+    position:absolute;
+    top: 34%;
+    left:50%;
+    transform: translate(-50%, -50%);
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #c08a52, var(--gold) 60%, #8a6534 100%);
+    box-shadow: 0 4px 10px rgba(74,24,38,0.4), inset 0 -3px 6px rgba(0,0,0,0.25);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:4;
+    transition: opacity .3s ease, transform .3s ease;
+  }
+  .seal svg{ width:24px; height:24px; opacity:0.9; }
+
+  .to-line{
+    position:absolute;
+    bottom: 24%;
+    left:0; right:0;
+    text-align:center;
+    font-family:'Fraunces', serif;
+    font-style: italic;
+    font-size: clamp(18px, 4vw, 22px);
+    color: var(--ink-soft);
+    z-index:1;
+  }
+
+  .envelope.is-open .flap{
+    transform: rotateX(180deg);
+  }
+  .envelope.is-open .seal{
+    opacity:0;
+    transform: translate(-50%,-50%) scale(0.6);
+  }
+
+  .peek-letter{
+    position:absolute;
+    left: 8%;
+    right: 8%;
+    bottom: 6%;
+    top: 30%;
+    background: var(--paper);
+    border: 1px solid rgba(109,36,54,0.15);
+    border-radius: 2px;
+    z-index:2;
+    transition: transform 0.6s cubic-bezier(.2,.7,.3,1) 0.15s, opacity 0.5s ease 0.15s;
+    transform: translateY(0);
+  }
+  .envelope.is-open .peek-letter{
+    transform: translateY(-130%);
+  }
+
+  .hint{
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
+  }
+
+  .envelope-wrap.is-open .hint{
+    opacity:0;
+  }
+
+  /* ---------- LETTER ---------- */
+  .letter-wrap{
+    max-width: 620px;
+    width: 100%;
+    opacity:0;
+    transform: translateY(18px);
+    animation: rise 0.8s ease forwards;
+  }
+
+  @keyframes rise{
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  .letter{
+    background: var(--paper);
+    border-radius: 4px;
+    padding: clamp(28px, 6vw, 56px) clamp(24px, 7vw, 64px);
+    box-shadow: 0 30px 60px -30px rgba(74,24,38,0.4);
+    border: 1px solid rgba(109,36,54,0.12);
+    position:relative;
+  }
+
+  .letter::before{
+    content:"";
+    position:absolute;
+    top:14px; left:14px; right:14px; bottom:14px;
+    border: 1px solid rgba(171,129,72,0.35);
+    pointer-events:none;
+    border-radius:2px;
+  }
+
+  .letter-date{
+    font-size: 13px;
+    color: var(--ink-soft);
+    letter-spacing: 0.03em;
+    margin-bottom: 28px;
+  }
+
+  .letter-heading{
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(30px, 6vw, 42px);
+    color: var(--wine-deep);
+    margin: 0 0 6px 0;
+    line-height: 1.1;
+  }
+
+  .letter-heading em{
+    font-style: italic;
+    font-weight: 400;
+    color: var(--rose);
+  }
+
+  .flourish{
+    width: 72px;
+    height: 14px;
+    margin: 4px 0 30px 0;
+    color: var(--rose);
+  }
+  .flourish svg{ width:100%; height:100%; display:block; }
+
+  .letter-body p{
+    font-size: clamp(15.5px, 2vw, 17px);
+    line-height: 1.75;
+    color: var(--ink);
+    margin: 0 0 20px 0;
+    max-width: 62ch;
+  }
+
+  .letter-body .lead::first-letter{
+    font-family:'Fraunces', serif;
+    font-size: 3.1em;
+    float:left;
+    line-height: 0.8;
+    padding: 4px 8px 0 0;
+    color: var(--wine);
+    font-weight: 600;
+  }
+
+  .signoff{
+    margin-top: 36px;
+  }
+
+  .signoff .line1{
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin: 0 0 2px 0;
+  }
+
+  .signoff .name{
+    font-family:'Fraunces', serif;
+    font-style: italic;
+    font-size: clamp(24px, 4vw, 30px);
+    color: var(--wine-deep);
+    margin:0;
+  }
+
+  .wish-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap: 10px;
+    margin-top: 34px;
+    padding-top: 26px;
+    border-top: 1px solid rgba(171,129,72,0.28);
+  }
+
+  .wish-chip{
+    font-size: 13px;
+    color: var(--wine-deep);
+    background: rgba(233,188,192,0.28);
+    border: 1px solid rgba(109,36,54,0.15);
+    padding: 7px 14px;
+    border-radius: 100px;
+    letter-spacing: 0.01em;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .flap, .peek-letter, .letter-wrap, .seal{
+      transition: none !important;
+      animation: none !important;
+    }
+    .letter-wrap{ opacity:1; transform:none; }
+  }
+
+  button.envelope{
+    all: unset;
+    display:block;
+  }
+  button.envelope:focus-visible .envelope-body{
+    outline: 3px solid var(--wine);
+    outline-offset: 3px;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <div class="envelope-wrap" id="envelopeWrap">
+    <button class="envelope" id="envelope" aria-label="Abrir la carta de cumpleaños">
+      <div class="envelope-body">
+        <div class="to-line">Para mi mamá</div>
+        <div class="peek-letter"></div>
+        <div class="flap"></div>
+        <div class="seal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fbf1ef" stroke-width="1.4">
+            <path d="M12 21s-7-4.6-9.5-9C.7 8.4 2 4.8 5.3 4.1 7.6 3.6 9.9 4.8 12 7c2.1-2.2 4.4-3.4 6.7-2.9 3.3.7 4.6 4.3 2.8 7.9C19 16.4 12 21 12 21z"/>
+          </svg>
+        </div>
+      </div>
+    </button>
+    <p class="hint">Toca el sobre para abrirlo</p>
+  </div>
+
+  <div class="letter-wrap" id="letterWrap" style="display:none;">
+    <div class="letter">
+      <p class="letter-date">6 de septiembre</p>
+
+      <h1 class="letter-heading">Feliz cumpleaños,<br><em>mum</em>.</h1>
+
+      <div class="flourish">
+        <svg viewBox="0 0 72 14" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M1 7 C 15 -2, 20 16, 36 7 C 52 -2, 57 16, 71 7"/>
+        </svg>
+      </div>
+
+      <div class="letter-body">
+        <p class="lead">Hola mum, hoy quiero tomarme un momento para decirte lo agradecido que estoy de tenerte. No siempre encuentro las palabras para decir todo lo que siento, así que espero que esta carta lo diga por mí.</p>
+
+        <p>Gracias por cada sacrificio silencioso que has hecho por mí, por las veces que pusiste mis metas antes que las tuyas, y por estar ahí en los días buenos y en los difíciles sin pedir nada a cambio. Cada cosa que soy hoy tiene un poco de ti detrás.</p>
+
+        <p>Espero que este nuevo año de vida te traiga la misma paz y alegría que tú le das a los demás. Que te sorprenda con cosas buenas, que te encuentre sana, y que te recuerde todos los días lo mucho que te quiero.</p>
+
+        <p>Feliz cumpleaños, mamá. Gracias por todo lo que eres.</p>
+      </div>
+
+      <div class="signoff">
+        <p class="line1">Con todo mi cariño,</p>
+        <p class="name">Carlos</p>
+      </div>
+
+      <div class="wish-row">
+        <span class="wish-chip">Salud</span>
+        <span class="wish-chip">Felicidad</span>
+        <span class="wish-chip">Muchos años más</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const envelope = document.getElementById('envelope');
+  const envelopeWrap = document.getElementById('envelopeWrap');
+  const letterWrap = document.getElementById('letterWrap');
+
+  envelope.addEventListener('click', () => {
+    envelope.classList.add('is-open');
+    envelopeWrap.classList.add('is-open');
+    setTimeout(() => {
+      envelopeWrap.classList.add('is-hidden');
+      letterWrap.style.display = 'block';
+    }, 650);
+  });
+</script>
+
+</body>
+</html>
